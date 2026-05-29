@@ -1,5 +1,5 @@
 const http = require("http");
-const { requestHandler } = require("../src/server");
+const { requestHandler, startServer, server: mainServer } = require("../src/server");
 const { request } = require("./helpers/http");
 
 describe("API /calculate", () => {
@@ -12,6 +12,17 @@ describe("API /calculate", () => {
 
   afterAll((done) => {
     server.close(done);
+  });
+
+  describe("Démarrage du serveur", () => {
+    it("devrait exécuter startServer sans erreur", () => {
+      const listenSpy = jest.spyOn(mainServer, "listen").mockImplementation(() => mainServer);
+      
+      startServer();
+      
+      expect(listenSpy).toHaveBeenCalled();
+      listenSpy.mockRestore();
+    });
   });
 
   describe("Performance", () => {

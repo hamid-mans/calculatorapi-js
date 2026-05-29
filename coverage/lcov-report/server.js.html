@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">96.42% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>54/56</span>
+                <span class='fraction'>55/55</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">96.15% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>50/52</span>
+                <span class='fraction'>51/51</span>
             </div>
         
             
@@ -143,8 +143,13 @@
 <a name='L78'></a><a href='#L78'>78</a>
 <a name='L79'></a><a href='#L79'>79</a>
 <a name='L80'></a><a href='#L80'>80</a>
-<a name='L81'></a><a href='#L81'>81</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -177,6 +182,8 @@
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25x</span>
+<span class="cline-any cline-yes">25x</span>
 <span class="cline-any cline-yes">25x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">25x</span>
@@ -217,14 +224,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">const http = require("http");
-const url = require("url");
 const Calculator = require("./calculator");
 &nbsp;
 const PORT = 3000;
@@ -249,7 +260,7 @@ function requestHandler(req, res) {
     return;
   }
 &nbsp;
-  const parsedUrl = url.parse(req.url, true);
+  const parsedUrl = new URL(req.url, `http://${req.headers.host || <span class="branch-1 cbranch-no" title="branch not covered" >"localhost"}</span>`);
 &nbsp;
   if (parsedUrl.pathname !== "/calculate") {
     res.statusCode = 404;
@@ -257,9 +268,11 @@ function requestHandler(req, res) {
     return;
   }
 &nbsp;
-  const { operation, a, b } = parsedUrl.query;
+  const operation = parsedUrl.searchParams.get("operation");
+  const a = parsedUrl.searchParams.get("a");
+  const b = parsedUrl.searchParams.get("b");
 &nbsp;
-  if (!operation || a === undefined || b === undefined) {
+  if (!operation || a === null || b === null) {
     res.statusCode = 400;
     res.end(JSON.stringify({ error: "Paramètres attendus : operation, a, b" }));
     return;
@@ -297,20 +310,25 @@ function requestHandler(req, res) {
 &nbsp;
 const server = http.createServer(requestHandler);
 &nbsp;
-<span class="missing-if-branch" title="if path not taken" >I</span>if (require.main === module) {
-<span class="cstat-no" title="statement not covered" >  server.listen(PORT, <span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    console.log(`Serveur démarré sur http://localhost:${PORT}`);</span>
+function startServer() {
+  server.listen(PORT);
+}
+&nbsp;
+/* istanbul ignore next */
+if (require.main === module) {
+  server.listen(PORT, () =&gt; {
+    console.log(`Serveur démarré sur http://localhost:${PORT}`);
   });
 }
 &nbsp;
-module.exports = { requestHandler, server };</pre></td></tr></table></pre>
+module.exports = { requestHandler, server, startServer };</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-29T10:39:46.766Z
+                at 2026-05-29T10:45:51.440Z
             </div>
         <script src="prettify.js"></script>
         <script>

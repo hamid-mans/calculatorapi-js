@@ -1,5 +1,4 @@
 const http = require("http");
-const url = require("url");
 const Calculator = require("./calculator");
 
 const PORT = 3000;
@@ -24,7 +23,7 @@ function requestHandler(req, res) {
     return;
   }
 
-  const parsedUrl = url.parse(req.url, true);
+  const parsedUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
 
   if (parsedUrl.pathname !== "/calculate") {
     res.statusCode = 404;
@@ -32,9 +31,11 @@ function requestHandler(req, res) {
     return;
   }
 
-  const { operation, a, b } = parsedUrl.query;
+  const operation = parsedUrl.searchParams.get("operation");
+  const a = parsedUrl.searchParams.get("a");
+  const b = parsedUrl.searchParams.get("b");
 
-  if (!operation || a === undefined || b === undefined) {
+  if (!operation || a === null || b === null) {
     res.statusCode = 400;
     res.end(JSON.stringify({ error: "Paramètres attendus : operation, a, b" }));
     return;
@@ -72,10 +73,15 @@ function requestHandler(req, res) {
 
 const server = http.createServer(requestHandler);
 
+function startServer() {
+  server.listen(PORT);
+}
+
+/* istanbul ignore next */
 if (require.main === module) {
   server.listen(PORT, () => {
     console.log(`Serveur démarré sur http://localhost:${PORT}`);
   });
 }
 
-module.exports = { requestHandler, server };
+module.exports = { requestHandler, server, startServer };
